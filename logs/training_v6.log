@@ -1,0 +1,179 @@
+Device : cuda
+AMP    : enabled
+
+Loading training data from src/train_data.csv ...
+Total samples : 54398
+Label distribution:
+  0 (Highly Deceptive): 11195
+  1 (Misleading): 21601
+  2 (Legitimate): 21602
+Oversampled training set to 19442 samples per class.
+
+Train: 58326  |  Val: 5440
+Loading weights:   0%|          | 0/100 [00:00<?, ?it/s]Loading weights: 100%|##########| 100/100 [00:00<00:00, 1067.24it/s]
+[1mDistilBertForSequenceClassification LOAD REPORT[0m from: distilbert-base-uncased
+Key                     | Status     | 
+------------------------+------------+-
+vocab_transform.weight  | UNEXPECTED | 
+vocab_layer_norm.weight | UNEXPECTED | 
+vocab_projector.bias    | UNEXPECTED | 
+vocab_layer_norm.bias   | UNEXPECTED | 
+vocab_transform.bias    | UNEXPECTED | 
+classifier.weight       | MISSING    | 
+pre_classifier.weight   | MISSING    | 
+classifier.bias         | MISSING    | 
+pre_classifier.bias     | MISSING    | 
+
+[3mNotes:
+- UNEXPECTED[3m	:can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING[3m	:those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.[0m
+Loss   : Focal Loss (gamma=2.0)
+
+Training for up to 10 epoch(s)  |  patience=4  |  label_smoothing=0.1
+Early stopping metric: macro F1 (higher = better)
+
+----------------------------------------------------------------------
+Epoch 1/10  |  Train Loss: 0.2173  |  Val Loss: 0.1641  |  Macro F1: 0.8352
+                  precision    recall  f1-score   support
+
+Highly Deceptive       0.64      0.88      0.74      1120
+      Misleading       0.87      0.85      0.86      2160
+      Legitimate       0.99      0.83      0.90      2160
+
+        accuracy                           0.85      5440
+       macro avg       0.83      0.85      0.84      5440
+    weighted avg       0.87      0.85      0.85      5440
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:03<00:00,  3.96s/it]Writing model shards: 100%|##########| 1/1 [00:03<00:00,  3.97s/it]
+  ->Best model saved  (macro F1 improved to 0.8352)
+
+Epoch 2/10  |  Train Loss: 0.1173  |  Val Loss: 0.1395  |  Macro F1: 0.8749
+                  precision    recall  f1-score   support
+
+Highly Deceptive       0.82      0.85      0.83      1120
+      Misleading       0.90      0.89      0.90      2160
+      Legitimate       0.90      0.89      0.90      2160
+
+        accuracy                           0.88      5440
+       macro avg       0.87      0.88      0.87      5440
+    weighted avg       0.88      0.88      0.88      5440
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.45it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.45it/s]
+  ->Best model saved  (macro F1 improved to 0.8749)
+
+Epoch 3/10  |  Train Loss: 0.0635  |  Val Loss: 0.1594  |  Macro F1: 0.8905
+                  precision    recall  f1-score   support
+
+Highly Deceptive       0.83      0.88      0.85      1120
+      Misleading       0.94      0.88      0.91      2160
+      Legitimate       0.89      0.92      0.91      2160
+
+        accuracy                           0.90      5440
+       macro avg       0.89      0.89      0.89      5440
+    weighted avg       0.90      0.90      0.90      5440
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  1.40it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  1.40it/s]
+  ->Best model saved  (macro F1 improved to 0.8905)
+
+Epoch 4/10  |  Train Loss: 0.0404  |  Val Loss: 0.2081  |  Macro F1: 0.8871
+                  precision    recall  f1-score   support
+
+Highly Deceptive       0.82      0.88      0.85      1120
+      Misleading       0.92      0.89      0.90      2160
+      Legitimate       0.91      0.91      0.91      2160
+
+        accuracy                           0.89      5440
+       macro avg       0.88      0.89      0.89      5440
+    weighted avg       0.90      0.89      0.89      5440
+
+  ->No improvement  (1/4)
+
+Epoch 5/10  |  Train Loss: 0.0298  |  Val Loss: 0.2306  |  Macro F1: 0.8945
+                  precision    recall  f1-score   support
+
+Highly Deceptive       0.86      0.86      0.86      1120
+      Misleading       0.94      0.89      0.91      2160
+      Legitimate       0.88      0.93      0.91      2160
+
+        accuracy                           0.90      5440
+       macro avg       0.90      0.89      0.89      5440
+    weighted avg       0.90      0.90      0.90      5440
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  1.60it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  1.60it/s]
+  ->Best model saved  (macro F1 improved to 0.8945)
+
+Epoch 6/10  |  Train Loss: 0.0242  |  Val Loss: 0.2387  |  Macro F1: 0.8970
+                  precision    recall  f1-score   support
+
+Highly Deceptive       0.88      0.86      0.87      1120
+      Misleading       0.94      0.89      0.91      2160
+      Legitimate       0.88      0.94      0.91      2160
+
+        accuracy                           0.90      5440
+       macro avg       0.90      0.90      0.90      5440
+    weighted avg       0.90      0.90      0.90      5440
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.77it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.76it/s]
+  ->Best model saved  (macro F1 improved to 0.8970)
+
+Epoch 7/10  |  Train Loss: 0.0215  |  Val Loss: 0.2280  |  Macro F1: 0.8990
+                  precision    recall  f1-score   support
+
+Highly Deceptive       0.87      0.87      0.87      1120
+      Misleading       0.93      0.90      0.92      2160
+      Legitimate       0.89      0.93      0.91      2160
+
+        accuracy                           0.90      5440
+       macro avg       0.90      0.90      0.90      5440
+    weighted avg       0.91      0.90      0.90      5440
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.03it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.03it/s]
+  ->Best model saved  (macro F1 improved to 0.8990)
+
+Epoch 8/10  |  Train Loss: 0.0203  |  Val Loss: 0.2377  |  Macro F1: 0.9008
+                  precision    recall  f1-score   support
+
+Highly Deceptive       0.88      0.87      0.87      1120
+      Misleading       0.95      0.89      0.92      2160
+      Legitimate       0.88      0.94      0.91      2160
+
+        accuracy                           0.91      5440
+       macro avg       0.90      0.90      0.90      5440
+    weighted avg       0.91      0.91      0.91      5440
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  1.97it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  1.97it/s]
+  ->Best model saved  (macro F1 improved to 0.9008)
+
+Epoch 9/10  |  Train Loss: 0.0195  |  Val Loss: 0.2303  |  Macro F1: 0.8991
+                  precision    recall  f1-score   support
+
+Highly Deceptive       0.87      0.86      0.87      1120
+      Misleading       0.94      0.90      0.92      2160
+      Legitimate       0.89      0.93      0.91      2160
+
+        accuracy                           0.90      5440
+       macro avg       0.90      0.90      0.90      5440
+    weighted avg       0.91      0.90      0.90      5440
+
+  ->No improvement  (1/4)
+
+Epoch 10/10  |  Train Loss: 0.0194  |  Val Loss: 0.2298  |  Macro F1: 0.8987
+                  precision    recall  f1-score   support
+
+Highly Deceptive       0.87      0.87      0.87      1120
+      Misleading       0.94      0.89      0.92      2160
+      Legitimate       0.89      0.93      0.91      2160
+
+        accuracy                           0.90      5440
+       macro avg       0.90      0.90      0.90      5440
+    weighted avg       0.91      0.90      0.90      5440
+
+  ->No improvement  (2/4)
+
+Loading weights:   0%|          | 0/104 [00:00<?, ?it/s]Loading weights: 100%|##########| 104/104 [00:00<00:00, 6361.22it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.04it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.04it/s]
+----------------------------------------------------------------------
+Training complete.
+Best macro F1 : 0.9008
+Model saved to: models/final_v6/
+Restart the API server to load the updated model.

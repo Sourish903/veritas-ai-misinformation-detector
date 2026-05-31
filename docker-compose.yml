@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  veritas:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist trained models across container restarts
+      - ./models:/app/models
+      # Persist training data and live news
+      - ./src/train_data.csv:/app/src/train_data.csv
+      - ./src/test_data.csv:/app/src/test_data.csv
+      - ./src/live_news.csv:/app/src/live_news.csv
+      - ./src/feedback.csv:/app/src/feedback.csv
+      # Persist scheduler logs
+      - ./logs:/app/logs
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
