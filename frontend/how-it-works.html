@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How it works — Veritas</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── DARK BASE (default) ── */
+:root {
+  --bg:           #0A0C15;
+  --surface:      #10131F;
+  --surface2:     #161C2C;
+  --surface-hover:#1A2035;
+  --border:       #252D42;
+  --border2:      #2E3A55;
+  --text:         #F0EFF8;
+  --text2:        #9AABD0;
+  --muted:        #5A6890;
+  --accent:       #7B61FF;
+  --accent-dim:   rgba(123,97,255,0.15);
+  --purple:       #7B61FF;
+  --purple-dim:   rgba(123,97,255,0.15);
+  --green:        #33FF99;
+  --green-dim:    rgba(51,255,153,0.12);
+  --green-glow:   rgba(51,255,153,0.25);
+  --yellow:       #FFA63F;
+  --yellow-dim:   rgba(255,166,63,0.12);
+  --yellow-glow:  rgba(255,166,63,0.25);
+  --red:          #FF3366;
+  --red-dim:      rgba(255,51,102,0.12);
+  --red-glow:     rgba(255,51,102,0.25);
+  --shadow:       0 8px 24px rgba(0,0,0,0.35);
+  --nav-bg:       rgba(10,12,21,0.92);
+  --transition-theme: background-color 0.3s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  --bg:           #FAFAF8;
+  --surface:      #FFFFFF;
+  --surface2:     #F2F1EE;
+  --surface-hover:#F5F3FF;
+  --border:       #E2DFD8;
+  --border2:      #D0CCEC;
+  --text:         #1A1814;
+  --text2:        #6B6760;
+  --muted:        #9A9690;
+  --accent:       #4F3AB6;
+  --accent-dim:   rgba(79,58,182,0.08);
+  --purple:       #4F3AB6;
+  --purple-dim:   rgba(79,58,182,0.08);
+  --green:        #187A4A;
+  --green-dim:    rgba(24,122,74,0.09);
+  --green-glow:   rgba(24,122,74,0.15);
+  --yellow:       #B06010;
+  --yellow-dim:   rgba(176,96,16,0.09);
+  --yellow-glow:  rgba(176,96,16,0.15);
+  --red:          #B82244;
+  --red-dim:      rgba(184,34,68,0.09);
+  --red-glow:     rgba(184,34,68,0.15);
+  --shadow:       0 4px 16px rgba(0,0,0,0.07);
+  --nav-bg:       rgba(250,250,248,0.95);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: var(--transition-theme);
+}
+
+[data-theme="light"] body {
+  background-image:
+    radial-gradient(ellipse at 15% 50%, rgba(79,58,182,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 20%, rgba(184,34,68,0.03) 0%, transparent 50%);
+}
+
+#bgCanvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.page { position:relative; z-index:2; padding-top:72px; }
+
+/* NAV */
+nav {
+  position:fixed; top:0; left:0; right:0;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:16px clamp(20px,4vw,48px); z-index:1000;
+  backdrop-filter:blur(16px);
+  background: rgba(10,12,21,0.88);
+  border-bottom: 1px solid rgba(123,97,255,0.4);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  transition: all 0.25s ease;
+}
+[data-theme="light"] nav {
+  background: rgba(250,250,248,0.95);
+  border-bottom: 1px solid #E2DFD8;
+  box-shadow: 0 1px 0 #E2DFD8;
+}
+@media(max-width:768px){ nav{padding:12px 24px;} .page{padding-top:68px;} }
+
+.logo {
+  font-family:'Syne',sans-serif; font-size:24px; font-weight:800;
+  letter-spacing:-1px; text-decoration:none;
+  background: linear-gradient(135deg,#FFFFFF 0%,#7B61FF 60%,#FF5E7E 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+[data-theme="light"] .logo {
+  background: linear-gradient(135deg,#1A1814 0%,#4F3AB6 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+
+.nav-right { display:flex; align-items:center; gap:12px; }
+.nav-links { display:flex; gap:4px; list-style:none; }
+.nav-links a {
+  color:var(--text2); text-decoration:none; font-size:13px; font-weight:600;
+  padding:8px 16px; border-radius:40px; transition:all 0.2s;
+}
+.nav-links a:hover, .nav-links a.active {
+  color:white; background:linear-gradient(95deg,#7B61FF,#B47CFF);
+  box-shadow:0 0 10px rgba(123,97,255,0.4);
+}
+[data-theme="light"] .nav-links a:hover,
+[data-theme="light"] .nav-links a.active {
+  color:white; background:#4F3AB6; box-shadow:none;
+}
+
+.theme-toggle {
+  width:38px; height:38px; border-radius:50%; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:16px;
+  transition:all 0.2s; border:1px solid #7B61FF;
+  background:rgba(16,19,31,0.8); color:#7B61FF;
+}
+.theme-toggle:hover { background:#7B61FF; color:#0A0C15; }
+[data-theme="light"] .theme-toggle { border-color:#C2B8F0; background:#EEE9FF; color:#4F3AB6; }
+[data-theme="light"] .theme-toggle:hover { background:#4F3AB6; color:#fff; border-color:#4F3AB6; }
+
+/* HERO */
+.page-hero { text-align:center; padding:clamp(36px,5vw,60px) clamp(20px,4vw,40px) clamp(30px,4vw,50px); max-width:700px; margin:0 auto; }
+.page-hero h1 {
+  font-family:'Syne',sans-serif; font-size:clamp(36px,5vw,52px); font-weight:800;
+  line-height:1.05; letter-spacing:-2px; margin-bottom:16px; color:var(--text);
+}
+.page-hero h1 em {
+  font-style:normal;
+  background:linear-gradient(135deg,#FF5E7E,#FFA63F);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+[data-theme="light"] .page-hero h1 em {
+  background:linear-gradient(135deg,#C03060,#E07030);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.page-hero p { color:var(--text2); font-size:16px; line-height:1.75; }
+
+/* CONTENT */
+.content { max-width:860px; margin:0 auto; padding:0 clamp(20px,4vw,40px) 120px; }
+
+.reveal { opacity:0; transform:translateY(28px); transition:opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity:1; transform:none; }
+
+/* SECTION HEADING */
+.sec-title {
+  font-family:'Syne',sans-serif; font-size:22px; font-weight:700;
+  letter-spacing:-0.5px; margin-bottom:8px; color:var(--text);
+}
+[data-theme="light"] .sec-title {
+  background:linear-gradient(135deg,#1A1814,#4F3AB6);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.sec-lead { color:var(--text2); font-size:14px; margin-bottom:28px; }
+
+/* CARD */
+.card {
+  background:var(--surface2); border:1px solid var(--border2);
+  border-radius:18px; transition:all 0.3s ease;
+}
+[data-theme="light"] .card { background:#FFFFFF; border-color:#E2DFD8; }
+.card:hover { border-color:var(--purple); background:var(--surface-hover); transform:translateY(-5px); box-shadow:var(--shadow); }
+
+/* SEV CARDS */
+.sev-card {
+  border-radius:18px; padding:24px; border:1px solid;
+  transition:all 0.3s ease;
+}
+.sev-card:hover { transform:translateY(-5px); }
+.sev-card.g { background:var(--green-dim); border-color:var(--green); }
+.sev-card.g:hover { box-shadow:0 10px 24px var(--green-glow); }
+.sev-card.y { background:var(--yellow-dim); border-color:var(--yellow); }
+.sev-card.y:hover { box-shadow:0 10px 24px var(--yellow-glow); }
+.sev-card.r { background:var(--red-dim); border-color:var(--red); }
+.sev-card.r:hover { box-shadow:0 10px 24px var(--red-glow); }
+
+.sev-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+.sev-card.g .sev-label { color:var(--green); }
+.sev-card.y .sev-label { color:var(--yellow); }
+.sev-card.r .sev-label { color:var(--red); }
+.sev-label {
+  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase;
+}
+.sev-card p { font-size:13px; color:var(--text2); line-height:1.6; margin-top:10px; }
+
+/* BUTTONS */
+.btn-primary {
+  padding:12px 32px; border-radius:50px;
+  background:#7B61FF; color:white;
+  font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
+  border:none; cursor:pointer; text-decoration:none; display:inline-block;
+  transition:all 0.2s; box-shadow:0 4px 14px rgba(123,97,255,0.3);
+}
+.btn-primary:hover { background:#6A50EE; transform:translateY(-2px); box-shadow:0 8px 20px rgba(123,97,255,0.45); }
+[data-theme="light"] .btn-primary { background:#4F3AB6; box-shadow:0 4px 14px rgba(79,58,182,0.2); }
+[data-theme="light"] .btn-primary:hover { background:#3D2D9A; box-shadow:0 8px 20px rgba(79,58,182,0.3); }
+
+.btn-secondary {
+  padding:12px 32px; border-radius:50px; background:transparent;
+  border:1px solid var(--border2); color:var(--text2);
+  font-family:'DM Sans',sans-serif; font-size:14px;
+  text-decoration:none; transition:all 0.2s; display:inline-block;
+}
+.btn-secondary:hover { color:var(--text); background:var(--surface-hover); border-color:var(--purple); }
+
+/* CTA BLOCK */
+.cta-block {
+  text-align:center; padding:48px 32px;
+  background:var(--surface2); border:1px solid var(--border2); border-radius:20px;
+}
+[data-theme="light"] .cta-block { background:#FFFFFF; border-color:#E2DFD8; }
+.cta-block h2 { font-family:'Syne',sans-serif; font-size:24px; font-weight:700; letter-spacing:-0.5px; margin-bottom:10px; color:var(--text); }
+.cta-block p { color:var(--text2); font-size:14px; margin-bottom:22px; }
+.cta-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+
+/* FOOTER */
+footer {
+  text-align:center; padding:40px; color:var(--muted);
+  font-size:12px; border-top:1px solid var(--border); background:var(--surface);
+}
+[data-theme="light"] footer { background:#F2F1EE; border-top-color:#E2DFD8; color:#6B6760; }
+footer a { color:var(--text2); text-decoration:none; margin:0 12px; transition:color 0.2s; font-weight:500; }
+footer a:hover { color:var(--purple); }
+[data-theme="light"] footer a:hover { color:#4F3AB6; }
+
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--purple); border-radius:4px; }
+</style>
+
+<style>
+.content { max-width:860px; margin:0 auto; padding:0 clamp(20px,4vw,40px) 120px; }
+.big-steps { display:flex; flex-direction:column; gap:0; margin-bottom:80px; }
+.big-step { display:grid; grid-template-columns:80px 1fr; gap:0 40px; position:relative; }
+.big-step:not(:last-child)::after { content:""; position:absolute; left:39px; top:80px; bottom:-32px; width:1px; background:var(--border2); opacity:0.6; }
+.step-circle { width:80px; height:80px; border-radius:50%; background:var(--surface2); border:1px solid var(--border2); display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; position:relative; z-index:1; transition:all 0.3s; }
+[data-theme="light"] .step-circle { background:#FFFFFF; border-color:#D0CCEC; }
+.big-step:hover .step-circle { border-color:var(--purple); transform:scale(1.05); }
+.step-right { padding:8px 0 56px; }
+.step-num { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:2px; color:var(--purple); text-transform:uppercase; margin-bottom:10px; }
+.step-right h3 { font-family:'Syne',sans-serif; font-size:22px; font-weight:700; letter-spacing:-0.5px; margin-bottom:10px; color:var(--text); }
+.step-right p { font-size:14px; color:var(--text2); line-height:1.75; max-width:560px; margin-bottom:16px; }
+.step-detail { background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:16px 20px; display:flex; flex-direction:column; gap:8px; max-width:520px; }
+[data-theme="light"] .step-detail { background:#FAFAF8; border-color:#E2DFD8; }
+.step-detail-row { display:flex; gap:10px; align-items:flex-start; font-size:13px; color:var(--text2); }
+.step-detail-row::before { content:"✓"; color:var(--purple); font-weight:700; flex-shrink:0; }
+
+.sev-section { margin-bottom:80px; }
+.sev-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.sev-card-top { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.sev-dot { width:8px; height:8px; border-radius:50%; }
+.sev-card-label { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+.sev-card.g .sev-card-label { color:var(--green); }
+.sev-card.y .sev-card-label { color:var(--yellow); }
+.sev-card.r .sev-card-label { color:var(--red); }
+.sev-card p { font-size:13px; line-height:1.55; color:var(--text2); margin-top:0; }
+.sev-examples { margin-top:14px; padding-top:12px; border-top:1px solid var(--border); font-size:12px; line-height:1.6; color:var(--text2); display:flex; flex-direction:column; gap:4px; }
+.sev-examples strong { font-weight:600; color:var(--text); display:block; margin-bottom:4px; font-size:12px; }
+
+.model-section { background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:32px; margin-bottom:80px; }
+[data-theme="light"] .model-section { background:#FFFFFF; border-color:#E2DFD8; }
+.model-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+.model-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; transition:all 0.3s; }
+[data-theme="light"] .model-card { background:#F2F1EE; border-color:#E2DFD8; }
+.model-card:hover { border-color:var(--purple); background:var(--surface-hover); transform:translateY(-4px); }
+.model-card-icon { font-size:28px; margin-bottom:12px; }
+.model-card h4 { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; margin-bottom:8px; color:var(--text); }
+.model-card p { font-size:13px; color:var(--text2); line-height:1.5; }
+
+@media(max-width:768px){ .content{padding-left:20px;padding-right:20px;} .sev-cards,.model-grid{grid-template-columns:1fr;} .big-step{grid-template-columns:56px 1fr;gap:0 24px;} .big-step:not(:last-child)::after{left:27px;top:60px;} .step-circle{width:56px;height:56px;font-size:22px;} }
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<div class="page">
+<nav>
+  <a class="logo" href="index.html">VERITAS</a>
+  <div class="nav-right">
+    <div class="nav-links"><a href="index.html">Home</a><a href="how-it-works.html" class="active">How it works</a><a href="try-example.html">Try an example</a><a href="features.html">Features</a><a href="faq.html">FAQ</a><a href="about.html">About</a></div>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>From text to<br><em>verdict in seconds</em></h1>
+  <p>A three-step process that takes any written content and returns a full misinformation severity analysis.</p>
+</div>
+
+<div class="content">
+
+  <div class="big-steps reveal">
+    <div class="big-step">
+      <div><div class="step-circle">📝</div></div>
+      <div class="step-right">
+        <div class="step-num">Step 01</div>
+        <h3>Paste your text</h3>
+        <p>Copy any text you want to check — a news article, social media post, WhatsApp forward, or any written claim. The analyzer accepts up to 5,000 characters per submission.</p>
+        <div class="step-detail">
+          <div class="step-detail-row">Accepts news headlines, articles, social posts, emails</div>
+          <div class="step-detail-row">Works with any English-language text up to 5,000 characters</div>
+          <div class="step-detail-row">No sign-up or account required</div>
+        </div>
+      </div>
+    </div>
+    <div class="big-step">
+      <div><div class="step-circle">⚡</div></div>
+      <div class="step-right">
+        <div class="step-num">Step 02</div>
+        <h3>The model analyzes it</h3>
+        <p>Your text is sent to our transformer-based model which evaluates it across multiple dimensions — linguistic patterns, claim structure, emotional language, source credibility signals, and known misinformation patterns.</p>
+        <div class="step-detail">
+          <div class="step-detail-row">Checks for emotionally charged or sensational language</div>
+          <div class="step-detail-row">Identifies unsupported absolute claims</div>
+          <div class="step-detail-row">Detects deceptive framing and misleading context</div>
+          <div class="step-detail-row">Flags conspiracy-pattern language</div>
+        </div>
+      </div>
+    </div>
+    <div class="big-step">
+      <div><div class="step-circle">📊</div></div>
+      <div class="step-right">
+        <div class="step-num">Step 03</div>
+        <h3>You get a full verdict</h3>
+        <p>The result isn't just a label — it includes a severity rating, a confidence score, the type of misinformation detected, a plain-language explanation, and a recommendation for what to do next.</p>
+        <div class="step-detail">
+          <div class="step-detail-row">Severity: Legitimate, Misleading, or Highly Deceptive</div>
+          <div class="step-detail-row">Confidence score from 0–100%</div>
+          <div class="step-detail-row">Plain-language explanation of the flags</div>
+          <div class="step-detail-row">Export or copy the result for sharing</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sev-section reveal">
+    <h2 class="sec-title">Understanding the severity levels</h2>
+    <p class="sec-lead" style="margin-bottom:28px">Every analysis returns one of three severity ratings. Here's what each one means.</p>
+    <div class="sev-cards">
+      <div class="sev-card g">
+        <div class="sev-card-top"><div class="sev-dot" style="background:var(--green)"></div><div class="sev-card-label">Legitimate</div></div>
+        <p>The content is factually sound and accurately framed. Claims are supported, context is present, and language is measured without misleading intent.</p>
+        <div class="sev-examples"><strong>Common examples</strong>Well-sourced news reports · Peer-reviewed findings accurately described · Official statements quoted in context</div>
+      </div>
+      <div class="sev-card y">
+        <div class="sev-card-top"><div class="sev-dot" style="background:var(--yellow)"></div><div class="sev-card-label">Misleading</div></div>
+        <p>The content distorts facts through exaggeration, missing context, or selective framing. Not outright false, but creates a false impression.</p>
+        <div class="sev-examples"><strong>Common examples</strong>Headlines that strip important nuance · Statistics presented without context · Anecdotal evidence framed as universal</div>
+      </div>
+      <div class="sev-card r">
+        <div class="sev-card-top"><div class="sev-dot" style="background:var(--red)"></div><div class="sev-card-label">Highly Deceptive</div></div>
+        <p>The content is designed to deceive. Contains fabricated facts, conspiracy framing, or deliberate manipulation with little to no basis in verified reality.</p>
+        <div class="sev-examples"><strong>Common examples</strong>Fabricated government cover-up claims · Medical misinformation with fake citations · Coordinated disinformation narratives</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="model-section reveal">
+    <h2 class="sec-title">About the model</h2>
+    <p class="sec-lead">What's actually happening under the hood when you submit text.</p>
+    <div class="model-grid">
+      <div class="model-card"><div class="model-card-icon">🧠</div><h4>Transformer architecture</h4><p>Built on a fine-tuned transformer model trained on large corpora of labeled misinformation and verified news content.</p></div>
+      <div class="model-card"><div class="model-card-icon">🎯</div><h4>Multi-label classification</h4><p>Rather than a binary true/false output, the model produces a probability distribution across severity tiers.</p></div>
+      <div class="model-card"><div class="model-card-icon">📐</div><h4>Confidence calibration</h4><p>The confidence score reflects how strongly the model distinguishes the predicted class from alternatives — not just raw probability.</p></div>
+      <div class="model-card"><div class="model-card-icon">⚠️</div><h4>Limitations</h4><p>No model is perfect. Results should be used as a starting point for critical thinking, not as a final verdict. Always cross-check important claims.</p></div>
+    </div>
+  </div>
+
+  <div class="cta-block reveal">
+    <h2>Ready to try it?</h2>
+    <p>See the analyzer in action with a real example, or paste your own text directly.</p>
+    <div class="cta-btns">
+      <a href="try-example.html" class="btn-primary">See examples</a>
+      <a href="index.html" class="btn-secondary">Go to analyzer</a>
+    </div>
+  </div>
+
+</div>
+<footer>
+  Veritas &copy; 2026 &nbsp;&middot;&nbsp;
+  <a href="how-it-works.html">How it works</a>
+  <a href="try-example.html">Try an example</a>
+  <a href="features.html">Features</a>
+  <a href="faq.html">FAQ</a>
+  <a href="about.html">About</a>
+</footer>
+</div>
+
+<script>
+const htmlEl = document.documentElement;
+const themeBtn = document.getElementById('themeBtn');
+function toggleTheme() {
+  const isDark = htmlEl.getAttribute('data-theme') === 'dark';
+  htmlEl.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  themeBtn.textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('veritasTheme', isDark ? 'light' : 'dark');
+}
+(function initTheme() {
+  const saved = localStorage.getItem('veritasTheme') || 'dark';
+  htmlEl.setAttribute('data-theme', saved);
+  themeBtn.textContent = saved === 'dark' ? '🌙' : '☀️';
+})();
+
+(function initCanvas() {
+  const canvas = document.getElementById('bgCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let width, height, particles = [];
+  function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  class Particle {
+    constructor() { this.reset(); }
+    reset() { this.x=Math.random()*width; this.y=Math.random()*height; this.radius=Math.random()*1.5+0.5; this.vx=(Math.random()-0.5)*0.2; this.vy=(Math.random()-0.5)*0.2; this.alpha=Math.random()*0.2+0.04; }
+    update() { this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>width)this.vx*=-1; if(this.y<0||this.y>height)this.vy*=-1; }
+    draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.radius,0,Math.PI*2); ctx.fillStyle=`rgba(123,97,255,${this.alpha})`; ctx.fill(); }
+  }
+  for(let i=0;i<50;i++) particles.push(new Particle());
+  function animate() {
+    ctx.clearRect(0,0,width,height);
+    if(htmlEl.getAttribute('data-theme')!=='dark'){requestAnimationFrame(animate);return;}
+    for(let i=0;i<particles.length;i++){particles[i].update();particles[i].draw();
+      for(let j=i+1;j<particles.length;j++){const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<120){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(123,97,255,${0.03*(1-d/120)})`;ctx.lineWidth=0.5;ctx.stroke();}
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+</script>
+
+</body>
+</html>

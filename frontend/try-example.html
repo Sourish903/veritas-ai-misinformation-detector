@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Try an example — Veritas</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── DARK BASE (default) ── */
+:root {
+  --bg:           #0A0C15;
+  --surface:      #10131F;
+  --surface2:     #161C2C;
+  --surface-hover:#1A2035;
+  --border:       #252D42;
+  --border2:      #2E3A55;
+  --text:         #F0EFF8;
+  --text2:        #9AABD0;
+  --muted:        #5A6890;
+  --accent:       #7B61FF;
+  --accent-dim:   rgba(123,97,255,0.15);
+  --purple:       #7B61FF;
+  --purple-dim:   rgba(123,97,255,0.15);
+  --green:        #33FF99;
+  --green-dim:    rgba(51,255,153,0.12);
+  --green-glow:   rgba(51,255,153,0.25);
+  --yellow:       #FFA63F;
+  --yellow-dim:   rgba(255,166,63,0.12);
+  --yellow-glow:  rgba(255,166,63,0.25);
+  --red:          #FF3366;
+  --red-dim:      rgba(255,51,102,0.12);
+  --red-glow:     rgba(255,51,102,0.25);
+  --shadow:       0 8px 24px rgba(0,0,0,0.35);
+  --nav-bg:       rgba(10,12,21,0.92);
+  --transition-theme: background-color 0.3s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  --bg:           #FAFAF8;
+  --surface:      #FFFFFF;
+  --surface2:     #F2F1EE;
+  --surface-hover:#F5F3FF;
+  --border:       #E2DFD8;
+  --border2:      #D0CCEC;
+  --text:         #1A1814;
+  --text2:        #6B6760;
+  --muted:        #9A9690;
+  --accent:       #4F3AB6;
+  --accent-dim:   rgba(79,58,182,0.08);
+  --purple:       #4F3AB6;
+  --purple-dim:   rgba(79,58,182,0.08);
+  --green:        #187A4A;
+  --green-dim:    rgba(24,122,74,0.09);
+  --green-glow:   rgba(24,122,74,0.15);
+  --yellow:       #B06010;
+  --yellow-dim:   rgba(176,96,16,0.09);
+  --yellow-glow:  rgba(176,96,16,0.15);
+  --red:          #B82244;
+  --red-dim:      rgba(184,34,68,0.09);
+  --red-glow:     rgba(184,34,68,0.15);
+  --shadow:       0 4px 16px rgba(0,0,0,0.07);
+  --nav-bg:       rgba(250,250,248,0.95);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: var(--transition-theme);
+}
+
+[data-theme="light"] body {
+  background-image:
+    radial-gradient(ellipse at 15% 50%, rgba(79,58,182,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 20%, rgba(184,34,68,0.03) 0%, transparent 50%);
+}
+
+#bgCanvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.page { position:relative; z-index:2; padding-top:72px; }
+
+/* NAV */
+nav {
+  position:fixed; top:0; left:0; right:0;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:16px clamp(20px,4vw,48px); z-index:1000;
+  backdrop-filter:blur(16px);
+  background: rgba(10,12,21,0.88);
+  border-bottom: 1px solid rgba(123,97,255,0.4);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  transition: all 0.25s ease;
+}
+[data-theme="light"] nav {
+  background: rgba(250,250,248,0.95);
+  border-bottom: 1px solid #E2DFD8;
+  box-shadow: 0 1px 0 #E2DFD8;
+}
+@media(max-width:768px){ nav{padding:12px 24px;} .page{padding-top:68px;} }
+
+.logo {
+  font-family:'Syne',sans-serif; font-size:24px; font-weight:800;
+  letter-spacing:-1px; text-decoration:none;
+  background: linear-gradient(135deg,#FFFFFF 0%,#7B61FF 60%,#FF5E7E 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+[data-theme="light"] .logo {
+  background: linear-gradient(135deg,#1A1814 0%,#4F3AB6 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+
+.nav-right { display:flex; align-items:center; gap:12px; }
+.nav-links { display:flex; gap:4px; list-style:none; }
+.nav-links a {
+  color:var(--text2); text-decoration:none; font-size:13px; font-weight:600;
+  padding:8px 16px; border-radius:40px; transition:all 0.2s;
+}
+.nav-links a:hover, .nav-links a.active {
+  color:white; background:linear-gradient(95deg,#7B61FF,#B47CFF);
+  box-shadow:0 0 10px rgba(123,97,255,0.4);
+}
+[data-theme="light"] .nav-links a:hover,
+[data-theme="light"] .nav-links a.active {
+  color:white; background:#4F3AB6; box-shadow:none;
+}
+
+.theme-toggle {
+  width:38px; height:38px; border-radius:50%; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:16px;
+  transition:all 0.2s; border:1px solid #7B61FF;
+  background:rgba(16,19,31,0.8); color:#7B61FF;
+}
+.theme-toggle:hover { background:#7B61FF; color:#0A0C15; }
+[data-theme="light"] .theme-toggle { border-color:#C2B8F0; background:#EEE9FF; color:#4F3AB6; }
+[data-theme="light"] .theme-toggle:hover { background:#4F3AB6; color:#fff; border-color:#4F3AB6; }
+
+/* HERO */
+.page-hero { text-align:center; padding:clamp(36px,5vw,60px) clamp(20px,4vw,40px) clamp(30px,4vw,50px); max-width:700px; margin:0 auto; }
+.page-hero h1 {
+  font-family:'Syne',sans-serif; font-size:clamp(36px,5vw,52px); font-weight:800;
+  line-height:1.05; letter-spacing:-2px; margin-bottom:16px; color:var(--text);
+}
+.page-hero h1 em {
+  font-style:normal;
+  background:linear-gradient(135deg,#FF5E7E,#FFA63F);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+[data-theme="light"] .page-hero h1 em {
+  background:linear-gradient(135deg,#C03060,#E07030);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.page-hero p { color:var(--text2); font-size:16px; line-height:1.75; }
+
+/* CONTENT */
+.content { max-width:860px; margin:0 auto; padding:0 clamp(20px,4vw,40px) 120px; }
+
+.reveal { opacity:0; transform:translateY(28px); transition:opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity:1; transform:none; }
+
+/* SECTION HEADING */
+.sec-title {
+  font-family:'Syne',sans-serif; font-size:22px; font-weight:700;
+  letter-spacing:-0.5px; margin-bottom:8px; color:var(--text);
+}
+[data-theme="light"] .sec-title {
+  background:linear-gradient(135deg,#1A1814,#4F3AB6);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.sec-lead { color:var(--text2); font-size:14px; margin-bottom:28px; }
+
+/* CARD */
+.card {
+  background:var(--surface2); border:1px solid var(--border2);
+  border-radius:18px; transition:all 0.3s ease;
+}
+[data-theme="light"] .card { background:#FFFFFF; border-color:#E2DFD8; }
+.card:hover { border-color:var(--purple); background:var(--surface-hover); transform:translateY(-5px); box-shadow:var(--shadow); }
+
+/* SEV CARDS */
+.sev-card {
+  border-radius:18px; padding:24px; border:1px solid;
+  transition:all 0.3s ease;
+}
+.sev-card:hover { transform:translateY(-5px); }
+.sev-card.g { background:var(--green-dim); border-color:var(--green); }
+.sev-card.g:hover { box-shadow:0 10px 24px var(--green-glow); }
+.sev-card.y { background:var(--yellow-dim); border-color:var(--yellow); }
+.sev-card.y:hover { box-shadow:0 10px 24px var(--yellow-glow); }
+.sev-card.r { background:var(--red-dim); border-color:var(--red); }
+.sev-card.r:hover { box-shadow:0 10px 24px var(--red-glow); }
+
+.sev-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+.sev-card.g .sev-label { color:var(--green); }
+.sev-card.y .sev-label { color:var(--yellow); }
+.sev-card.r .sev-label { color:var(--red); }
+.sev-label {
+  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase;
+}
+.sev-card p { font-size:13px; color:var(--text2); line-height:1.6; margin-top:10px; }
+
+/* BUTTONS */
+.btn-primary {
+  padding:12px 32px; border-radius:50px;
+  background:#7B61FF; color:white;
+  font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
+  border:none; cursor:pointer; text-decoration:none; display:inline-block;
+  transition:all 0.2s; box-shadow:0 4px 14px rgba(123,97,255,0.3);
+}
+.btn-primary:hover { background:#6A50EE; transform:translateY(-2px); box-shadow:0 8px 20px rgba(123,97,255,0.45); }
+[data-theme="light"] .btn-primary { background:#4F3AB6; box-shadow:0 4px 14px rgba(79,58,182,0.2); }
+[data-theme="light"] .btn-primary:hover { background:#3D2D9A; box-shadow:0 8px 20px rgba(79,58,182,0.3); }
+
+.btn-secondary {
+  padding:12px 32px; border-radius:50px; background:transparent;
+  border:1px solid var(--border2); color:var(--text2);
+  font-family:'DM Sans',sans-serif; font-size:14px;
+  text-decoration:none; transition:all 0.2s; display:inline-block;
+}
+.btn-secondary:hover { color:var(--text); background:var(--surface-hover); border-color:var(--purple); }
+
+/* CTA BLOCK */
+.cta-block {
+  text-align:center; padding:48px 32px;
+  background:var(--surface2); border:1px solid var(--border2); border-radius:20px;
+}
+[data-theme="light"] .cta-block { background:#FFFFFF; border-color:#E2DFD8; }
+.cta-block h2 { font-family:'Syne',sans-serif; font-size:24px; font-weight:700; letter-spacing:-0.5px; margin-bottom:10px; color:var(--text); }
+.cta-block p { color:var(--text2); font-size:14px; margin-bottom:22px; }
+.cta-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+
+/* FOOTER */
+footer {
+  text-align:center; padding:40px; color:var(--muted);
+  font-size:12px; border-top:1px solid var(--border); background:var(--surface);
+}
+[data-theme="light"] footer { background:#F2F1EE; border-top-color:#E2DFD8; color:#6B6760; }
+footer a { color:var(--text2); text-decoration:none; margin:0 12px; transition:color 0.2s; font-weight:500; }
+footer a:hover { color:var(--purple); }
+[data-theme="light"] footer a:hover { color:#4F3AB6; }
+
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--purple); border-radius:4px; }
+</style>
+
+<style>
+.content { max-width:920px; margin:0 auto; padding:0 clamp(20px,4vw,40px) 120px; }
+.filter-row { display:flex; gap:10px; margin-bottom:32px; flex-wrap:wrap; }
+.filter-btn {
+  padding:8px 22px; border-radius:40px; font-size:12px;
+  font-family:'JetBrains Mono',monospace; font-weight:500; cursor:pointer;
+  border:1px solid var(--border2); background:transparent; color:var(--text2);
+  transition:all 0.2s; letter-spacing:0.5px;
+}
+.filter-btn:hover { color:var(--text); background:var(--surface-hover); border-color:var(--purple); }
+.filter-btn.active { background:var(--purple); color:white; border-color:var(--purple); }
+[data-theme="light"] .filter-btn.active { background:#4F3AB6; border-color:#4F3AB6; }
+
+.examples-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+.example-card {
+  background:var(--surface2); border:1px solid var(--border); border-radius:18px;
+  padding:24px; cursor:pointer; transition:all 0.3s ease;
+  display:flex; flex-direction:column; gap:14px;
+}
+[data-theme="light"] .example-card { background:#FFFFFF; border-color:#E2DFD8; }
+.example-card:hover { border-color:var(--purple); background:var(--surface-hover); transform:translateY(-5px); box-shadow:var(--shadow); }
+.card-top { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+.sev-badge {
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  padding:5px 14px; border-radius:40px; letter-spacing:0.5px; text-transform:uppercase;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.sev-badge::before { content:""; width:6px; height:6px; border-radius:50%; }
+.sb-g { background:var(--green-dim); color:var(--green); border:1px solid var(--green); }
+.sb-g::before { background:var(--green); }
+.sb-y { background:var(--yellow-dim); color:var(--yellow); border:1px solid var(--yellow); }
+.sb-y::before { background:var(--yellow); }
+.sb-r { background:var(--red-dim); color:var(--red); border:1px solid var(--red); }
+.sb-r::before { background:var(--red); }
+
+.card-topic { font-size:11px; color:var(--muted); font-weight:500; letter-spacing:0.3px; }
+.card-text { font-size:14px; color:var(--text2); line-height:1.65; font-style:italic; }
+.card-footer { display:flex; align-items:center; justify-content:space-between; padding-top:8px; border-top:1px solid var(--border); flex-wrap:wrap; gap:10px; }
+[data-theme="light"] .card-footer { border-top-color:#E2DFD8; }
+.card-tags { display:flex; gap:8px; flex-wrap:wrap; }
+.card-tag {
+  font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 10px;
+  border-radius:40px; background:var(--surface); color:var(--muted); border:1px solid var(--border);
+}
+[data-theme="light"] .card-tag { background:#F2F1EE; border-color:#E2DFD8; color:#9A9690; }
+.card-cta { font-size:12px; color:var(--purple); font-weight:600; white-space:nowrap; display:flex; align-items:center; gap:4px; transition:gap 0.2s; }
+.example-card:hover .card-cta { gap:8px; }
+
+.preview-section { margin-bottom:40px; display:none; }
+.preview-section.show { display:block; }
+.preview-box {
+  background:var(--surface2); border:1px solid var(--purple);
+  border-radius:18px; padding:28px; animation:previewIn 0.3s ease;
+}
+[data-theme="light"] .preview-box { background:#FFF8F0; border-color:#4F3AB6; }
+@keyframes previewIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.preview-label {
+  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600;
+  letter-spacing:2px; text-transform:uppercase; color:var(--purple);
+  margin-bottom:14px; display:flex; align-items:center; gap:10px;
+}
+[data-theme="light"] .preview-label { color:#4F3AB6; }
+.preview-label::after { content:""; flex:1; height:1px; background:var(--accent-dim); }
+.preview-text { font-size:15px; color:var(--text); line-height:1.75; font-style:italic; margin-bottom:22px; }
+.preview-actions { display:flex; gap:14px; flex-wrap:wrap; }
+.btn-deselect {
+  padding:12px 28px; border-radius:50px; background:transparent;
+  border:1px solid var(--border2); color:var(--text2);
+  font-family:'DM Sans',sans-serif; font-size:14px; cursor:pointer; transition:all 0.2s;
+}
+.btn-deselect:hover { color:var(--text); background:var(--surface-hover); border-color:var(--purple); }
+.empty-state { text-align:center; padding:60px 20px; color:var(--muted); font-size:14px; display:none; }
+.empty-state.show { display:block; }
+@media(max-width:768px){ .content{padding-left:20px;padding-right:20px;} .examples-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<div class="page">
+<nav>
+  <a class="logo" href="index.html">VERITAS</a>
+  <div class="nav-right">
+    <div class="nav-links"><a href="index.html">Home</a><a href="how-it-works.html">How it works</a><a href="try-example.html" class="active">Try an example</a><a href="features.html">Features</a><a href="faq.html">FAQ</a><a href="about.html">About</a></div>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>See the analyzer<br><em>in action</em></h1>
+  <p>Browse real-world misinformation examples across topics. Select one to preview it, then send it straight to the analyzer.</p>
+</div>
+
+<div class="content">
+  <div class="filter-row reveal" id="filterRow">
+    <button class="filter-btn active" onclick="filterCards('all',this)">All</button>
+    <button class="filter-btn" onclick="filterCards('health',this)">Health</button>
+    <button class="filter-btn" onclick="filterCards('tech',this)">Technology</button>
+    <button class="filter-btn" onclick="filterCards('finance',this)">Finance</button>
+    <button class="filter-btn" onclick="filterCards('politics',this)">Politics</button>
+    <button class="filter-btn" onclick="filterCards('science',this)">Science</button>
+    <button class="filter-btn" onclick="filterCards('sports',this)">Sports</button>
+  </div>
+
+  <div class="preview-section" id="previewSection">
+    <div class="preview-box">
+      <div class="preview-label">Selected example</div>
+      <div class="preview-text" id="previewText"></div>
+      <div class="preview-actions">
+        <a href="index.html" class="btn-primary" onclick="sendToAnalyzer()">Analyze this text →</a>
+        <button class="btn-deselect" onclick="clearSelection()">Clear selection</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="examples-grid reveal" id="examplesGrid"></div>
+  <div class="empty-state" id="emptyState">No examples found for this category.</div>
+</div>
+
+<footer>
+  Veritas &copy; 2026 &nbsp;&middot;&nbsp;
+  <a href="how-it-works.html">How it works</a>
+  <a href="try-example.html">Try an example</a>
+  <a href="features.html">Features</a>
+  <a href="faq.html">FAQ</a>
+  <a href="about.html">About</a>
+</footer>
+</div>
+
+
+<script>
+const htmlEl = document.documentElement;
+const themeBtn = document.getElementById('themeBtn');
+function toggleTheme() {
+  const isDark = htmlEl.getAttribute('data-theme') === 'dark';
+  htmlEl.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  themeBtn.textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('veritasTheme', isDark ? 'light' : 'dark');
+}
+(function initTheme() {
+  const saved = localStorage.getItem('veritasTheme') || 'dark';
+  htmlEl.setAttribute('data-theme', saved);
+  themeBtn.textContent = saved === 'dark' ? '🌙' : '☀️';
+})();
+
+(function initCanvas() {
+  const canvas = document.getElementById('bgCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let width, height, particles = [];
+  function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  class Particle {
+    constructor() { this.reset(); }
+    reset() { this.x=Math.random()*width; this.y=Math.random()*height; this.radius=Math.random()*1.5+0.5; this.vx=(Math.random()-0.5)*0.2; this.vy=(Math.random()-0.5)*0.2; this.alpha=Math.random()*0.2+0.04; }
+    update() { this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>width)this.vx*=-1; if(this.y<0||this.y>height)this.vy*=-1; }
+    draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.radius,0,Math.PI*2); ctx.fillStyle=`rgba(123,97,255,${this.alpha})`; ctx.fill(); }
+  }
+  for(let i=0;i<50;i++) particles.push(new Particle());
+  function animate() {
+    ctx.clearRect(0,0,width,height);
+    if(htmlEl.getAttribute('data-theme')!=='dark'){requestAnimationFrame(animate);return;}
+    for(let i=0;i<particles.length;i++){particles[i].update();particles[i].draw();
+      for(let j=i+1;j<particles.length;j++){const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<120){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(123,97,255,${0.03*(1-d/120)})`;ctx.lineWidth=0.5;ctx.stroke();}
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+</script>
+
+<script>
+const EXAMPLES = [
+  /* ── HIGHLY DECEPTIVE ── */
+  {severity:'Highly Deceptive',sev:'r',categories:['health'],tags:['Cancer','FakeCure','Conspiracy'],
+    text:'Scientists have officially confirmed that a miracle cure for every form of cancer has been discovered in a common household spice available in supermarkets worldwide. Peer-reviewed studies conducted across 15 countries have verified that daily consumption eliminates all cancer cells within 60 days with zero side effects. The article claims pharmaceutical companies have suppressed this discovery for over two decades to protect chemotherapy revenues worth trillions of dollars annually.'},
+  {severity:'Highly Deceptive',sev:'r',categories:['health'],tags:['Vaccines','Autism','Debunked'],
+    text:'A new study circulating online claims to have definitively proven that routine childhood vaccinations cause autism spectrum disorder in 1 out of every 3 vaccinated children. The research allegedly tracked 500,000 children across seven countries and found that the MMR, DTaP, and flu vaccines all independently trigger irreversible neurological damage within weeks of administration. Health authorities are reportedly scrambling to suppress the findings before they can reach mainstream media outlets.'},
+  {severity:'Highly Deceptive',sev:'r',categories:['politics'],tags:['ElectionFraud','VotingMachines','Fabricated'],
+    text:'Government Documents Leaked: Aliens Have Been Living Among Us Since 1947'},
+  {severity:'Highly Deceptive',sev:'r',categories:['health'],tags:['5G','Radiation','Fabricated'],
+    text:'A document circulating widely on Telegram and alternative health forums claims that internal WHO memos, obtained through a supposed whistleblower, confirm that 5G tower radiation directly causes aggressive lung disease and was the true driver behind the elevated respiratory illness rates seen in densely networked urban areas since 2020. The post includes fabricated graphs showing a 1-to-1 correlation between 5G tower density and excess mortality, and urges readers to cover routers, avoid populated areas, and share the post before it is censored. Scientists and epidemiologists have comprehensively reviewed 5G radiofrequency exposure and confirmed it operates well below any threshold linked to biological harm, and no credible WHO memo matching the description exists in any official or leaked archive.'},
+  /* ── MISLEADING ── */
+  {severity:'Misleading',sev:'y',categories:['health'],tags:['Sugar','Obesity','SelectiveData'],
+    text:'Experts Say Drinking Wine Daily Better for Heart Health Than Exercise'},
+  {severity:'Misleading',sev:'y',categories:['science'],tags:['EV','Environment','CherryPickedData'],
+    text:'A widely shared analysis argues that electric vehicles cause more total environmental harm than gasoline-powered cars when accounting for battery manufacturing, lithium mining, and electricity grid emissions. While battery production carries a higher upfront carbon cost, the majority of peer-reviewed lifecycle studies conclude EVs produce significantly fewer cumulative emissions over their operational life. Researchers criticised the analysis for using data exclusively from coal-heavy grids and ignoring the rapid global shift toward renewable energy.'},
+  {severity:'Misleading',sev:'y',categories:['health'],tags:['Antidepressants','Placebo','Oversimplified'],
+    text:'A widely circulated post argues that antidepressants are no more effective than sugar pills for treating depression, citing a 2008 meta-analysis that found the average drug-placebo difference fell below a threshold the authors considered clinically meaningful. The claim strips away critical nuance: the same analysis found that antidepressants showed substantial benefits for patients with severe depression, and subsequent large-scale studies including the STAR*D trial have consistently demonstrated meaningful response rates. Major psychiatric associations caution that dismissing antidepressants as placebos discourages people with serious depressive disorders from seeking treatment that clinical evidence supports.'},
+  {severity:'Misleading',sev:'y',categories:['science'],tags:['Climate','GlobalCooling','FalseConsensus'],
+    text:'A survey circulating among climate skeptic groups claims a majority of scientists now consider global cooling a more immediate threat than global warming, citing reduced solar activity and recent volcanic cooling effects. In reality, multiple independent surveys consistently show that 97 percent of publishing climate scientists agree human-caused global warming is occurring and represents the dominant long-term climate threat. The cooling claim misrepresents short-term local weather data and relies on a small number of contrarian studies that have not withstood peer review.'},
+  /* ── LEGITIMATE ── */
+  {severity:'Legitimate',sev:'g',categories:['finance'],tags:['Oil','Iran','Markets'],
+    text:'Crude oil prices surged nearly 4 percent, crossing $96.50 per barrel as escalating military tensions between the United States and Iran in the Gulf of Oman rattled global energy markets. Analysts at major investment banks warned that prices could approach $110 per barrel if naval blockades continue disrupting shipping through the Strait of Hormuz. American Airlines and several European carriers have already flagged rising fuel costs as a significant risk to their 2026 earnings forecasts.'},
+  {severity:'Legitimate',sev:'g',categories:['tech'],tags:['Meta','Layoffs','AI'],
+    text:'Meta Platforms announced it will lay off approximately 10 percent of its global workforce, equivalent to around 8,000 employees, as the company accelerates its pivot toward artificial intelligence infrastructure. Chief Executive Mark Zuckerberg said the restructuring would redirect resources toward next-generation AI models and hardware including smart glasses and mixed reality headsets. The move follows similar workforce reductions at other major technology firms responding to rising AI investment costs.'},
+  {severity:'Legitimate',sev:'g',categories:['sports'],tags:['India','T20WorldCup','Cricket'],
+    text:'India clinched the 2026 ICC Men\'s T20 Cricket World Cup title after defeating New Zealand by 15 runs in the final at Narendra Modi Stadium in Ahmedabad. Captain Rohit Sharma starred with a quickfire half-century as India posted 186 for 6, before their bowling lineup restricted New Zealand to 171 for 8. The victory marks India\'s third T20 World Cup title and was celebrated with large public gatherings across major cities nationwide.'},
+  {severity:'Legitimate',sev:'g',categories:['sports'],tags:['CommonwealthGames','Glasgow','Athletics'],
+    text:'The Commonwealth Games are scheduled in Glasgow, Scotland from July 23 to August 2, 2026, bringing together more than 5,000 athletes from 72 nations competing across 20 sports disciplines. The Scottish government confirmed the event will use existing venues across the city, with the Emirates Arena serving as the main hub for indoor competition. Glasgow\'s second time hosting the Games is expected to generate over £100 million in economic activity and 200,000 overnight visitor stays.'},
+];
+
+let selectedIndex = null;
+
+function sevBadgeClass(s) { return s==='g'?'sb-g':(s==='y'?'sb-y':'sb-r'); }
+
+function renderCards(filter) {
+  const grid = document.getElementById('examplesGrid'), empty = document.getElementById('emptyState');
+  const filtered = filter==='all' ? EXAMPLES : EXAMPLES.filter(e => e.categories.includes(filter));
+  if (!filtered.length) { grid.innerHTML=''; empty.className='empty-state show'; return; }
+  empty.className='empty-state';
+  grid.innerHTML = filtered.map((e) => {
+    const realIdx = EXAMPLES.findIndex(ex => ex===e);
+    return `<div class="example-card" onclick="selectExample(${realIdx})">
+      <div class="card-top"><span class="sev-badge ${sevBadgeClass(e.sev)}">${e.severity}</span><span class="card-topic">${e.categories.map(c=>c.charAt(0).toUpperCase()+c.slice(1)).join(' · ')}</span></div>
+      <div class="card-text">"${e.text}"</div>
+      <div class="card-footer"><div class="card-tags">${e.tags.map(t=>`<span class="card-tag">${t}</span>`).join('')}</div><div class="card-cta">Select →</div></div>
+    </div>`;
+  }).join('');
+}
+
+function selectExample(idx) {
+  selectedIndex = idx;
+  document.getElementById('previewText').textContent = '"' + EXAMPLES[idx].text + '"';
+  const sec = document.getElementById('previewSection');
+  sec.className = 'preview-section show';
+  sec.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function clearSelection() { selectedIndex=null; document.getElementById('previewSection').className='preview-section'; }
+function sendToAnalyzer() { if(selectedIndex===null) return false; sessionStorage.setItem('veritasPrefill', EXAMPLES[selectedIndex].text); return true; }
+function filterCards(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedIndex=null;
+  document.getElementById('previewSection').className='preview-section';
+  renderCards(cat);
+}
+renderCards('all');
+</script>
+</body>
+</html>

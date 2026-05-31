@@ -1,0 +1,19 @@
+# RAG system dependencies
+# Install with: pip install -r requirements_rag.txt
+
+# Core ML / embeddings
+torch>=2.0.0
+transformers>=4.40.0
+numpy>=1.24.0
+
+# Vector store
+faiss-cpu>=1.7.4          # use faiss-gpu if you have a CUDA GPU
+
+# LLM providers (install whichever you use)
+google-generativeai>=0.7.0   # Gemini — get key at https://aistudio.google.com/app/apikey
+huggingface_hub>=0.22.0      # HuggingFace Inference API (optional alternative)
+
+# API
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+pydantic>=2.0.0

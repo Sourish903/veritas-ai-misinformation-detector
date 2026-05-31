@@ -1,0 +1,40 @@
+# News fetching (for live fine-tuning)
+feedparser>=6.0.0          # parse RSS feeds
+requests>=2.31.0           # HTTP (also used by RAG)
+
+# Core ML
+torch>=2.0.0
+transformers>=4.40.0
+numpy>=1.24.0
+
+# Data processing / training
+pandas>=2.0.0
+scikit-learn>=1.3.0
+
+# API server
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0         # auto-loads .env file (GOOGLE_FC_KEY, NEWS_API_KEY, etc.)
+
+# Background scheduler (live news auto-updates)
+apscheduler>=3.10.0
+
+# RAG — vector store
+faiss-cpu>=1.7.4       # swap for faiss-gpu if you have a CUDA GPU
+
+# RAG — LLM providers (install whichever you use)
+google-generativeai>=0.7.0   # Gemini: get key at https://aistudio.google.com/app/apikey
+huggingface_hub>=0.22.0      # HuggingFace Inference API (optional alternative)
+
+# Synthetic data generation (free)
+groq>=0.9.0                  # Groq API — free Llama 3.3 70B; key at https://console.groq.com
+
+# Additional training datasets (optional)
+datasets>=2.19.0             # HuggingFace datasets — used to download LIAR dataset
+
+# URL article scraping (for /fetch-url endpoint)
+beautifulsoup4>=4.12.0
+
+# Non-English input detection
+langdetect>=1.0.9
